@@ -14,7 +14,7 @@ $csv_url = 'https://docs.google.com/feeds/download/spreadsheets/Export?key=1haUV
 $csv_file = 'ED_RareGoods_SystemsDistance - CURRENT.csv'
 $output_dir = './routes'
 
-$max_station_dist = 1000
+$max_station_dist = 2500
 $max_jump_dist = 90
 $min_sell_dist = 160
 
@@ -27,7 +27,7 @@ $max_allowed_undersells = 2
 $min_required_sell_dist = 120
 $max_goods_before_overflow = 4
 
-$start_system = 'Leesti'
+$start_system = 'Rapa Bao';
 
 # ================
 # MISC ARRAY STUFF
@@ -186,6 +186,11 @@ $systems.reject! do |system_name, system|
   system[:goods].empty?
 end
 
+#Remove Systems that require a permit
+$systems.reject! do |system_name, system|
+  system_name.include? "(permit)"
+end
+
 # Get route-plannable systems and systems to sell to, sorted
 # by proximity (nearest first)
 $systems.select! do |system, data|
@@ -211,6 +216,10 @@ $systems.each do |system_name, system|
   end
 end
 puts 'done'
+
+$systems.each do |system_name, system|
+  print system_name + "\n"
+end
 
 # ===============================================
 # FEEBLE ATTEMPT TO MAKE ROUTING FASTER / SMARTER
