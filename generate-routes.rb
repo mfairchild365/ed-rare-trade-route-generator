@@ -8,9 +8,9 @@ require 'pp'
 $project_name = 'Elite: Dangerous Rare Trade Route Generator'
 $project_url = 'https://github.com/cowboy/ed-rare-trade-route-generator'
 $project_version = '1.0.0'
-$source_sheet_url = 'https://docs.google.com/spreadsheets/d/1haUVaFIxFq5IPqZugJ8cfCEqBrZvFFzcA-uXB4pTfW4/edit?usp=sharing'
+$source_sheet_url = 'https://docs.google.com/spreadsheets/d/17Zv55yEjVdHrNzkH7BPnTCtXRs8GDHqchYjo9Svkyh4/edit?usp=sharing'
 
-$csv_url = 'https://docs.google.com/feeds/download/spreadsheets/Export?key=1haUVaFIxFq5IPqZugJ8cfCEqBrZvFFzcA-uXB4pTfW4&exportFormat=csv&gid=0'
+$csv_url = 'https://docs.google.com/feeds/download/spreadsheets/Export?key=17Zv55yEjVdHrNzkH7BPnTCtXRs8GDHqchYjo9Svkyh4&exportFormat=csv&gid=0'
 $csv_file = 'ED_RareGoods_SystemsDistance - CURRENT.csv'
 $output_dir = './routes'
 
@@ -180,6 +180,57 @@ print 'Removing systems with distant stations / missing routes...'
 # To help keep track of what systems are removed
 system_names = $systems.keys
 
+$illegal_stations = [
+	'Porta',
+	'Glushko Station',
+	'Schweikart Station',
+	'Weyl Gateway',
+	'Solo Orbiter',
+	'Libby Orbital',
+	'Fisher Station',
+	'Baltha\'sine Station',
+	'Antonio De Andrade Vista',
+	'Hart Station',
+	'Nemere Market',
+	'Pinzon Dock',
+	'Shukor Hub',
+	'Shifnalport',
+	'Finney Dock',
+	'Mansfield Orbiter',
+	'Azeban City',
+	'Savinykh Orbital',
+	'Bloch Station',
+	'Futen Spaceport',
+	'Zamka Platform',
+	'Yurchikhin Port',
+	'Lovelace Port',
+	'Brunel City',
+	'Friend Orbital',
+	'Stefanyshyn-Piper Station',
+	'Stasheff Colony',
+	'Gohar Station',
+	'Nowak Orbital',
+	'Sinclair Platform',
+	'Fozard Ring',
+	'Laplace Ring',
+	'Lave Station',
+	'George Lucas',
+	'Toll Ring',
+	'Roddenberry Gateway',
+	'Sharon Lee Free Market',
+	'Snyder Terminal',
+	'Fernandes Market',
+	'Gr8minds',
+	'Gordon Terminal',
+	'Guest Installation',
+	'Fort Klarix',
+	'Clauss Hub',
+	'Vernadsky Dock',
+	'Hornby Terminal',
+	'PSaunders\'s Diveorta',
+	'Nicollier Hanger'
+]
+
 # Remove stations too far away from their sun
 $systems.reject! do |system_name, system|
   system[:goods].select! {|good| good[:station_dist] < $max_station_dist}
@@ -189,6 +240,16 @@ end
 #Remove Systems that require a permit
 $systems.reject! do |system_name, system|
   system_name.include? "(permit)"
+end
+
+
+
+#Remove Systems that have illegal goods
+$systems.reject! do |system_name, system|
+  #$illegal_good_stations.include? system_name
+  #system[:goods].select! {|good| good[:station_dist] < $max_station_dist}
+  $tmp = system[:goods].select {|good| $illegal_stations.include? good[:station_name]}
+  !$tmp.empty?
 end
 
 # Get route-plannable systems and systems to sell to, sorted
